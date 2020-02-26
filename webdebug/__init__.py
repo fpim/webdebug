@@ -41,6 +41,7 @@ def web_debug(catch=True,host=_DEFAULT_HOST,pin=_DEFAULT_PIN,port=_DEFAULT_PORT,
                         result = fn(*args, **kwargs)
                     except Exception as ex:
                         start_server(ex,host,pin,port,callbacks)
+                        raise ex
                     return result
                 return warpped
             else:
