@@ -1,9 +1,12 @@
 language: python
 python:
-  - 2.7
-  - 3.5
   - 3.6
   - 3.7
+env:
+  - PIP_VAL="pip install werkzeug==1.0.0"
+  - PIP_VAL="pip install werkzeug==0.16.1"
+  - PIP_VAL="pip install werkzeug==0.15.6"
+  - PIP_VAL="pip install werkzeug==0.14.1"
 
 before_install:
   - python --version
@@ -12,10 +15,7 @@ before_install:
   - pip install -U pytest-mock
   - pip install codecov
 install:
-  - pip install werkzeug==1.0.0
-  - pip install werkzeug==0.16.1
-  - pip install werkzeug==0.15.6
-  - pip install werkzeug==0.14.1
+  - $PIP_VAL
 script: pytest # run tests
 after_success:
   - codecov # submit coverage
