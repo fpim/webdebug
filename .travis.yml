@@ -12,7 +12,8 @@ before_install:
   - pip install -U pytest-mock
   - pip install codecov
 install:
-  - pip install werkzeug
+  - pip install werkzeug=1.0.0
+  - pip install werkzeug=0.16.1
 script: pytest # run tests
 after_success:
   - codecov # submit coverage
