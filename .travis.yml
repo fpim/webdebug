@@ -1,7 +1,11 @@
 language: python
 python:
+  - 3.4
+  - 3.5
   - 3.6
   - 3.7
+  - 3.8
+  - "pypy3"
 env:
   - PIP_VAL="pip install werkzeug==1.0.0"
   - PIP_VAL="pip install werkzeug==0.16.1"
