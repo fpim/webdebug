@@ -23,3 +23,8 @@ install:
 script: pytest # run tests
 after_success:
   - codecov # submit coverage
+
+jobs:
+  exclude:
+  - python: 3.4
+    env: PIP_VAL="pip install werkzeug==1.0.0"
