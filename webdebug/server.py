@@ -2,9 +2,9 @@ import traceback
 import threading
 import ctypes
 import time
-# from webdebug import _DEFAULT_PIN
+from .config import _DEFAULT_PORT, _DEFAULT_PIN, _DEFAULT_HOST
 
-def start_server(ex,host,pin,port,callbacks):
+def start_server(ex,host=_DEFAULT_HOST,pin=_DEFAULT_PIN,port=_DEFAULT_PORT,callbacks=[]):
     traceback.print_tb(ex.__traceback__)
     from werkzeug.debug import DebuggedApplication
     from werkzeug import Request,run_simple, Response
@@ -34,7 +34,8 @@ def start_server(ex,host,pin,port,callbacks):
     if port == 0:
         port = get_open_port()
     for cb in callbacks:
-        cb(ex,host, port,pin).run()
+        cb.load_exception(ex,host, port,pin)
+        cb.run()
 
     run_simple(host, port, app)
 

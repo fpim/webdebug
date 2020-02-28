@@ -11,4 +11,11 @@ setup(name='webdebug',
       author_email='frompythonimportme@gmail.com',
       license='MIT',
       packages=['webdebug'],
-      zip_safe=False)
+      zip_safe=False,
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "License :: OSI Approved :: MIT License",
+          "Operating System :: OS Independent",
+      ],
+      python_requires='>=3.4',
+      )

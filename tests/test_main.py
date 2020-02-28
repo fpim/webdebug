@@ -22,6 +22,49 @@ def test_web_debug(mocker):
     if sys.version_info >= (3, 6):
         webdebug.core.start_server.assert_called_once()
 
+@patch_start_server
+def test_web_debug_exclude_other_exception(mocker):
+    mocker.patch('webdebug.core.start_server')
+
+    @web_debug(exclude=(ValueError,))
+    def err():
+        0 / 0
+
+    err()
+
+
+    if sys.version_info >= (3, 6):
+        webdebug.core.start_server.assert_called_once()
+
+@patch_start_server
+def test_web_debug_exclude(mocker):
+    mocker.patch('webdebug.core.start_server')
+
+    @web_debug(exclude=(ZeroDivisionError,))
+    def err():
+        0 / 0
+
+    with pytest.raises(ZeroDivisionError):
+        err()
+
+    if sys.version_info >= (3, 6):
+        webdebug.core.start_server.assert_not_called()
+
+
+
+@patch_start_server
+def test_web_debug_as_wrapper(mocker):
+    mocker.patch('webdebug.core.start_server')
+
+    @web_debug
+    def err():
+        0 / 0
+
+    err()
+
+
+    if sys.version_info >= (3, 6):
+        webdebug.core.start_server.assert_called_once()
 
 @patch_start_server
 def test_web_debug_catch(mocker, monkeypatch):
@@ -53,14 +96,46 @@ def test_web_debug_catch_2(mocker, monkeypatch):
     if sys.version_info >= (3, 6):
         webdebug.core.start_server.assert_called_once()
 
+@patch_start_server
+def test_web_debug_catch_2_exclude(mocker, monkeypatch):
+    mocker.patch('webdebug.core.start_server')
+
+    @web_debug(catch=True,exclude=(ZeroDivisionError,))
+    def err():
+        0 / 0
+
+    try:
+        err()
+    except:
+        ...
+    if sys.version_info >= (3, 6):
+        webdebug.core.start_server.assert_not_called()
 
 def test_set_web_debug():
     import sys
     from subprocess import Popen, PIPE
-    proc = Popen([sys.executable, 'error_code.py'], stdout=PIPE, stderr=PIPE, cwd='./')
+    proc = Popen([sys.executable, 'error_code.py', 'None'], stdout=PIPE, stderr=PIPE, cwd='./')
     stdout, stderr = proc.communicate()
     print(stdout, stderr)
     assert stdout.startswith(b'called')
+
+
+def test_set_web_debug_ValueError():
+    import sys
+    from subprocess import Popen, PIPE
+    proc = Popen([sys.executable, 'error_code.py', 'ValueError'], stdout=PIPE, stderr=PIPE, cwd='./')
+    stdout, stderr = proc.communicate()
+    print(stdout, stderr)
+    assert stdout.startswith(b'called')
+
+
+def test_set_web_debug_ZeroDivisionError():
+    import sys
+    from subprocess import Popen, PIPE
+    proc = Popen([sys.executable, 'error_code.py', 'ZeroDivisionError'], stdout=PIPE, stderr=PIPE, cwd='./')
+    stdout, stderr = proc.communicate()
+    print(stdout, stderr)
+    assert not stdout.startswith(b'called')
 
 
 def test_run_as_module():

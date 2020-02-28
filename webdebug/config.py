@@ -1,0 +1,4 @@
+_DEFAULT_PORT = 59613
+_DEFAULT_HOST = 'localhost'
+_DEFAULT_PIN = '<random>'
+_DEFAULT_PIN_LEN = 6
