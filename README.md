@@ -10,8 +10,7 @@ have your long running tasks throwing error, unhandled, leaving you clueless wit
 
  > - Run your python code > unhandled exception > set-up `werkzeug` debug wep app > trigger notification (optional) > you debug interactively
 
-![screen](https://raw.githubusercontent.com/fpim/webdebug/master/screen1.png)
-![screen2](https://raw.githubusercontent.com/fpim/webdebug/master/screen2.png)
+![screen](https://raw.githubusercontent.com/fpim/webdebug/master/screen.gif)
 
 ## Installation
 
