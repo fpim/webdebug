@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='webdebug',
-      version='0.1-rc-3',
+      version='1.0.0',
         install_requires=[
            'werkzeug>=0.14'
         ],
