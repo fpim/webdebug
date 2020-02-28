@@ -17,9 +17,9 @@ have your long running tasks throwing error, unhandled, leaving you clueless wit
 
 `pip install webdebug`
 
-## werkzeug debugger
+## The werkzeug debugger
 
-**wendebug** simply makes **werkzeug debugger** available to your python scripts. For more information, please visit
+**webdebug** simply makes **werkzeug debugger** available to your python scripts. For more information, please visit
 [werkzeug's documentation](https://werkzeug.palletsprojects.com/en/1.0.x/debug/)
 
 ## Use
@@ -27,7 +27,7 @@ have your long running tasks throwing error, unhandled, leaving you clueless wit
 > **WARNING**: Do not, do not, and do not X 1,000 times, use this in production environments which is connect to the
 > external, because the debugger allow arbitrary code execution.
 
-### 1. Run as mudule
+### 1. Run as module
 
 Usage: `python -m webdebug [--host] address [--port] port [--pin] pin your_python_file.py`
 
