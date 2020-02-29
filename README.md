@@ -17,6 +17,11 @@ have your long running tasks throwing error, unhandled, leaving you clueless wit
 
 `pip install webdebug`
 
+## Requirement
+
+- Python 3.4 +
+- werkzeug 0.14 +
+
 ## The werkzeug debugger
 
 **webdebug** simply makes **werkzeug debugger** available to your python scripts. For more information, please visit
