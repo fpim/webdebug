@@ -3,7 +3,7 @@ import threading
 import ctypes
 import time
 from .config import _DEFAULT_PORT, _DEFAULT_PIN, _DEFAULT_HOST
-
+import socket
 
 def start_server(ex, host=_DEFAULT_HOST, pin=_DEFAULT_PIN, port=_DEFAULT_PORT, callbacks=[]):
     traceback.print_tb(ex.__traceback__)
@@ -37,28 +37,59 @@ def start_server(ex, host=_DEFAULT_HOST, pin=_DEFAULT_PIN, port=_DEFAULT_PORT, c
 
     if port == 0:
         port = get_open_port()
-    for cb in callbacks:
-        cb.load_exception(ex, host, port, pin)
-        cb.run()
 
-    try:
-        fd = int(os.environ['WERKZEUG_SERVER_FD'])
-    except (LookupError, ValueError):
-        fd = None
-    srv = make_server(host, port, app, threaded=False, processes=1,
-                      request_handler=None, passthrough_errors=False,
-                      ssl_context=None,
-                      fd=fd)
+    if is_port_in_use(port):
+         print(str(port) + ' is in use, cannot setup debugger.')
+         raise ex
+    else:
+        for cb in callbacks:
+            cb.load_exception(ex, host, port, pin)
+            cb.run()
 
-    th = threading.Thread(target=srv.serve_forever)
-    th.start()
-    while th.isAlive():
-        time.sleep(1)
-    raise ex
+        def log_startup(sock):
+            from werkzeug._internal import _log
+            try:
+                af_unix = socket.AF_UNIX
+            except AttributeError:
+                af_unix = None
+
+            display_hostname = host if host not in ("", "*") else "localhost"
+            quit_msg = "(Press CTRL+C to quit)"
+            if sock.family == af_unix:
+                _log("info", " * Running on %s %s", display_hostname, quit_msg)
+            else:
+                if ":" in display_hostname:
+                    display_hostname = "[%s]" % display_hostname
+                port = sock.getsockname()[1]
+                _log(
+                    "info",
+                    " * Running on %s://%s:%d/ %s",
+                    "http",
+                    display_hostname,
+                    port,
+                    quit_msg,
+                )
+
+        try:
+            fd = int(os.environ['WERKZEUG_SERVER_FD'])
+        except (LookupError, ValueError):
+            fd = None
+        srv = make_server(host, port, app, threaded=False, processes=1,
+                          request_handler=None, passthrough_errors=False,
+                          ssl_context=None,
+                          fd=fd)
+        if fd is None:
+            log_startup(srv.socket)
+        srv.serve_forever()
+        raise ex
+
+def is_port_in_use(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
 
 
 def get_open_port():
-    import socket
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("", 0))
     s.listen(1)

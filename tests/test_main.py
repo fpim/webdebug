@@ -111,6 +111,24 @@ def test_web_debug_catch_2_exclude(mocker, monkeypatch):
     if sys.version_info >= (3, 6):
         webdebug.core.start_server.assert_not_called()
 
+@patch_start_server
+def test_web_debug_context_manager(mocker, monkeypatch):
+    mocker.patch('webdebug.core.start_server')
+    with pytest.raises(ZeroDivisionError):
+        with web_debug:
+            0/0
+    if sys.version_info >= (3, 6):
+        webdebug.core.start_server.assert_called_once()
+
+@patch_start_server
+def test_web_debug_context_manager_called(mocker, monkeypatch):
+    mocker.patch('webdebug.core.start_server')
+    with pytest.raises(ZeroDivisionError):
+        with web_debug():
+            0/0
+    if sys.version_info >= (3, 6):
+        webdebug.core.start_server.assert_called_once()
+
 def test_set_web_debug():
     import sys
     from subprocess import Popen, PIPE
@@ -157,7 +175,7 @@ def test_run_as_module():
     proc = Popen(
         [sys.executable] + '-m webdebug --host localhost --port {0} error_code_module.py'.format(str(port)).split(' '),
         cwd='./')
-    time.sleep(3)
+    time.sleep(1.5)
 
     def is_port_in_use(port):
         import socket
@@ -165,3 +183,18 @@ def test_run_as_module():
             return s.connect_ex(('localhost', port)) == 0
 
     assert is_port_in_use(port)
+
+@pytest.mark.timeout(5, method='signal')
+def test_web_debug_shutdown():
+    import threading
+    import time
+    import requests
+    def shutdown():
+        time.sleep(3)
+        requests.get('http://localhost:54545?shutdown=Y',timeout=4)
+    th = threading.Thread(target=shutdown)
+    th.start()
+    with pytest.raises(ZeroDivisionError):
+        with web_debug(port=54545):
+            0/0
+    th.join()

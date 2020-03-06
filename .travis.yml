@@ -18,6 +18,7 @@ before_install:
   - pip install -U pytest
   - pip install -U pytest-mock
   - pip install codecov
+  - pip install pytest-timeout
 install:
   - $PIP_VAL
 script: pytest # run tests

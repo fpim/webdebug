@@ -1,12 +1,12 @@
 from setuptools import setup
 
 setup(name='webdebug',
-      version='1.0.0',
+      version='1.0.2',
         install_requires=[
            'werkzeug>=0.14'
         ],
       description='Webdebug',
-      url='',
+      url='https://github.com/fpim/webdebug',
       author='Louis@FPIM',
       author_email='frompythonimportme@gmail.com',
       license='MIT',

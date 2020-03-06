@@ -32,40 +32,60 @@ def __web_excepthook(exc_type, exc_value, tb, host, pin, port, callbacks,exclude
         start_server(exc_type(exc_value).with_traceback(tb),host,pin,port,callbacks)
     _original_excepthook(exc_type, exc_value, tb)
 
-def web_debug(catch=True,host=_DEFAULT_HOST,pin=_DEFAULT_PIN,port=_DEFAULT_PORT,callbacks=[],exclude=()):
-    _validation(host, pin, port, callbacks,exclude)
-    def wrapper(fn):
-        if os.environ.get('webdebug', 'true') == 'true':
-            if catch:
-                @wraps(fn)
-                def warpped(*args, **kwargs):
-                    result = None
-                    try:
-                        result = fn(*args, **kwargs)
-                    except Exception as ex:
-                        if isinstance(ex,exclude):
-                            raise ex
-                        else:
-                            start_server(ex,host,pin,port,callbacks)
-                    return result
-                return warpped
-            else:
-                @wraps(fn)
-                def warpped(*args, **kwargs):
-                    result = None
-                    set_web_debug(host, pin, port, callbacks,exclude)
-                    result = fn(*args, **kwargs)
-                    unset_web_debug()
-                    return result
-                return warpped
-        else:
-            return fn
-    if isinstance(catch,bool):
-        return wrapper
-    else:
-        return wrapper(catch)
 
+class __webdebug():
+    catch = True
+    host = _DEFAULT_HOST
+    pin = _DEFAULT_PIN
+    port = _DEFAULT_PORT
+    callbacks = []
+    exclude = ()
 
+    def __call__(self,catch=True,host=_DEFAULT_HOST,pin=_DEFAULT_PIN,port=_DEFAULT_PORT,callbacks=[],exclude=()):
+        if not isinstance(catch,bool) and not callable(catch):
+            raise ValueError('catch must be bool or callable')
+        _validation(host, pin, port, callbacks,exclude)
+        class wrapper_or_contextmanager():
+            def __call__(self,fn):
+                if os.environ.get('webdebug', 'true') == 'true':
+                    if catch:
+                        @wraps(fn)
+                        def warpped(*args, **kwargs):
+                            result = None
+                            try:
+                                result = fn(*args, **kwargs)
+                            except Exception as ex:
+                                if isinstance(ex,exclude):
+                                    raise ex
+                                else:
+                                    start_server(ex,host,pin,port,callbacks)
+                            return result
+                        return warpped
+                    else:
+                        @wraps(fn)
+                        def warpped(*args, **kwargs):
+                            result = None
+                            set_web_debug(host, pin, port, callbacks,exclude)
+                            result = fn(*args, **kwargs)
+                            unset_web_debug()
+                            return result
+                        return warpped
+                else:
+                    return fn
+            def __enter__(self):
+                ...
+            def __exit__(self, exc_type, exc_value, tb):
+                start_server(exc_type(exc_value).with_traceback(tb), host, pin, port, callbacks)
+
+        return wrapper_or_contextmanager() if isinstance(catch,bool) else  wrapper_or_contextmanager()(catch)
+
+    def __enter__(self):
+        ...
+
+    def __exit__(self, exc_type, exc_value, tb):
+        start_server(exc_type(exc_value).with_traceback(tb), self.host, self.pin, self.port, self.callbacks)
+
+web_debug = __webdebug()
 _usage = """
 usage: [-m webdebug | pyfile] [arg] ...
 """
