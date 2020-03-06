@@ -6,12 +6,15 @@ Make werkzeug's interactive debugger available in two lines of code.
 Have you always wished to have better debugging experience with python? We all know how frustrating it is to
 have your long running tasks throwing error, unhandled, leaving you clueless with a bunch of meaningless trace stack.
 
+You then want to setup a debugger, but again, nothing works out-of-the-box! Now you are frustrated.
+
 `webdebug` is to solver the problem by the following work flow:
 
  > - Run your python code > unhandled exception > set-up `werkzeug` debug wep app > trigger notification (optional) > you debug interactively
 
 ![screen](https://raw.githubusercontent.com/fpim/webdebug/master/screen1.png)
 ![screen2](https://raw.githubusercontent.com/fpim/webdebug/master/screen2.png)
+
 
 ## Installation
 
@@ -63,7 +66,28 @@ unset_web_debug()
 
 ```
 
-### 3. Function decorator
+#### caveat
+`set_web_debug` catch exception via `sys.excepthook` which is only trigger if exception is unhandled. 
+If you use pipeline framework like `luigi` which handles every exception, `set_web_debug` will not work as expected.
+You are encouraged to use [With Block](#3-with-block) instead. 
+
+### 3. With Block
+```python
+from webdebug import web_debug
+
+with web_debug:
+    0/0
+
+# or
+
+
+with web_debug(host='localhost',pin='12345',port='54321',callbacks=[]):
+    0/0
+    
+* Debugger is active!
+```
+
+### 4. Function decorator
 
 ```python
 from webdebug import web_debug
@@ -118,7 +142,7 @@ except:
 # nothing happens
 ```
 
-## 4. Start server from exception
+## 5. Start server from exception
 
 
 ```python
@@ -139,12 +163,13 @@ except Exception as ex:
 * Debugger is active!
 ```
 
+
 ## Callback/Notification
 You can extend `webdebug.callback.BaseCallBack` and `webdebug.callback.Notifier` classes.
 
-This package provides an out-of-the-box Gmail notifyer
+This package provides an out-of-the-box Gmail notifier.
 
-To use the notifyer, you need a gmail account and an [app password](https://support.google.com/accounts/answer/185833):
+To use the notifier, you need a Gmail account and an [app password](https://support.google.com/accounts/answer/185833):
 
 
 ```python
@@ -174,3 +199,15 @@ set_web_debug(exclude=(ZeroDivisionError,))
 
 #raise ZeroDivisionError as python normally world.
 ```
+
+## Shutting down webdebug server
+Fire a `get` request to / from you browser visit:
+
+`http://[host]:[port]?shutdown=Y` 
+
+## Exception handling after shutting down webdebug
+`webdebug` aims to be a plug-and-play package which introduce the least behavior changes to your python code.
+Exceptions are raised again after webdebug is shut down. If you find any strange behaviors, please report as issue.
+
+## Disabling webdebug on environment level
+set environment variable `'webdebug' = 'false'`.

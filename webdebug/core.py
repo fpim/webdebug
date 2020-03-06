@@ -72,18 +72,29 @@ class __webdebug():
                         return warpped
                 else:
                     return fn
-            def __enter__(self):
-                ...
+            def __enter__(self): ...
+
             def __exit__(self, exc_type, exc_value, tb):
-                start_server(exc_type(exc_value).with_traceback(tb), host, pin, port, callbacks)
+                if os.environ.get('webdebug', 'true') == 'true':
+                    try:
+                        ex = exc_type(exc_value).with_traceback(tb)
+                        if not isinstance(ex, exclude):
+                            start_server(ex, host, pin, port, callbacks)
+                    except:
+                        ...
 
         return wrapper_or_contextmanager() if isinstance(catch,bool) else  wrapper_or_contextmanager()(catch)
 
-    def __enter__(self):
-        ...
+    def __enter__(self): ...
 
     def __exit__(self, exc_type, exc_value, tb):
-        start_server(exc_type(exc_value).with_traceback(tb), self.host, self.pin, self.port, self.callbacks)
+        if os.environ.get('webdebug', 'true') == 'true':
+            try:
+                ex = exc_type(exc_value).with_traceback(tb)
+                start_server(ex, self.host, self.pin, self.port, self.callbacks)
+            except:
+                ...
+
 
 web_debug = __webdebug()
 _usage = """
