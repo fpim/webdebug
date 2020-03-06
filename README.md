@@ -86,7 +86,7 @@ unset_web_debug()
 ```
 
 #### caveat
-`set_web_debug` catch exception via `sys.excepthook` which is only trigger if exception is unhandled. 
+`set_web_debug` catch exceptions via `sys.excepthook` which is only triggered if the exception is unhandled. 
 If you use pipeline framework like `luigi` which handles every exception, `set_web_debug` will not work as expected.
 You are encouraged to use [With Block](#3-with-block) instead. 
 
