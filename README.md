@@ -15,6 +15,22 @@ You then want to setup a debugger, but again, nothing works out-of-the-box! Now 
 ![screen](https://raw.githubusercontent.com/fpim/webdebug/master/screen1.png)
 ![screen2](https://raw.githubusercontent.com/fpim/webdebug/master/screen2.png)
 
+- [webdebug](#webdebug)
+  * [Installation](#installation)
+  * [Requirement](#requirement)
+  * [The werkzeug debugger](#the-werkzeug-debugger)
+  * [Use](#use)
+    + [1. Run as module](#1-run-as-module)
+    + [2. Enable web debug in you script](#2-enable-web-debug-in-you-script)
+      - [caveat](#caveat)
+    + [3. With Block](#3-with-block)
+    + [4. Function decorator](#4-function-decorator)
+    + [5. Start server from exception](#5-start-server-from-exception)
+  * [Callback/Notification](#callback-notification)
+  * [Exceptions exclusion](#exceptions-exclusion)
+  * [Shutting down webdebug server](#shutting-down-webdebug-server)
+  * [Exception handling after shutting down webdebug](#exception-handling-after-shutting-down-webdebug)
+  * [Disabling webdebug on environment level](#disabling-webdebug-on-environment-level)
 
 ## Installation
 
@@ -142,7 +158,7 @@ except:
 # nothing happens
 ```
 
-## 5. Start server from exception
+### 5. Start server from exception
 
 
 ```python
