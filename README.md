@@ -1,5 +1,8 @@
 # webdebug
 [![Build Status](https://travis-ci.com/fpim/webdebug.svg?branch=master)](https://travis-ci.com/fpim/webdebug)
+![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)
+[![PyPi Version](https://img.shields.io/pypi/v/webdebug.svg)](https://pypi.python.org/pypi/webdebug/)
+![Supports Python 3.4+, including PyPy](https://img.shields.io/pypi/pyversions/webdebug.svg)
 
 Make werkzeug's interactive debugger available in two lines of code.
 
@@ -223,7 +226,13 @@ Fire a `get` request to / from you browser visit:
 
 ## Exception handling after shutting down webdebug
 `webdebug` aims to be a plug-and-play package which introduce the least behavior changes to your python code.
-Exceptions are raised again after webdebug is shut down. If you find any strange behaviors, please report as issue.
+Exceptions are raised again after webdebug is shut down. If you find any strange behaviors, please report an issue.
 
 ## Disabling webdebug on environment level
 set environment variable `'webdebug' = 'false'`.
+
+## Other options
+1. Bind `host = '0.0.0.0'` if you want to connect webdebug from external.
+    > **WARNING**: The debugger allow arbitrary code execution from external. Only do it if you know what you are doing!
+
+2. Bind `port = 0` for a random available port.
